@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:gtr_app/Environment.dart';
-import 'package:gtr_app/routes/Bottom_Navigator.dart';
+import 'package:gtr_app/routes/Navigator_Bottom.dart';
 import 'package:gtr_app/routes/Routes.dart';
 import 'package:gtr_app/themes/Theme_Data.dart';
 
@@ -17,7 +17,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: TITLE, //
       theme: Theme_Data.get_theme(),
-      home: const Bottom_Navigator_Page(), //
+      home: const Navigator_Bottom_Page(), //
       routes: Routes.routes,
       debugShowCheckedModeBanner: false,
     );

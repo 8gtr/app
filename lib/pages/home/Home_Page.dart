@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:gtr_app/Environment.dart';
-import 'package:gtr_app/routes/Left_Navigator.dart';
+import 'package:gtr_app/routes/Navigator_Left.dart';
 import 'package:gtr_app/themes/Theme_Data.dart';
 import 'package:gtr_app/utilities/Debug.dart';
 
@@ -75,7 +75,7 @@ class _Home_PageState extends State<Home_Page> {
           ],
         ),
       ),
-      drawer: Left_Navigator(),
+      drawer: Navigator_Left(),
     );
   }
 }

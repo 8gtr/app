@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:gtr_app/pages/Contributor.dart';
+import 'package:gtr_app/pages/contributors/Contributor.dart';
 import 'package:gtr_app/pages/Contact_Us.dart';
 import 'package:gtr_app/pages/Schedule.dart';
 import 'package:gtr_app/pages/attendance/QR_Generator_Page.dart';

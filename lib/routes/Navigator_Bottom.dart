@@ -6,7 +6,7 @@ import 'package:gtr_app/pages/home/Home_Page.dart';
 import 'package:gtr_app/pages/profile/Profile_Page.dart';
 
 import 'package:gtr_app/themes/Theme_Data.dart';
-import 'package:gtr_app/routes/Left_Navigator.dart';
+import 'package:gtr_app/routes/Navigator_Left.dart';
 
 void main() {
   usePathUrlStrategy();
@@ -21,20 +21,20 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: TITLE, //
       theme: Theme_Data.get_theme(), //
-      home: const Bottom_Navigator_Page(), //
+      home: const Navigator_Bottom_Page(), //
       debugShowCheckedModeBanner: false, //
     );
   }
 }
 
-class Bottom_Navigator_Page extends StatefulWidget {
-  const Bottom_Navigator_Page({super.key});
+class Navigator_Bottom_Page extends StatefulWidget {
+  const Navigator_Bottom_Page({super.key});
 
   @override
-  State<Bottom_Navigator_Page> createState() => _Bottom_Navigator_PageState();
+  State<Navigator_Bottom_Page> createState() => _Navigator_Bottom_PageState();
 }
 
-class _Bottom_Navigator_PageState extends State<Bottom_Navigator_Page> {
+class _Navigator_Bottom_PageState extends State<Navigator_Bottom_Page> {
   //
   int _nav_index = 0;
 
@@ -61,7 +61,7 @@ class _Bottom_Navigator_PageState extends State<Bottom_Navigator_Page> {
           } else if (index == 1) {
             _nav_index = 1;
           }
-          Left_Navigator.close_drawer(context);
+          Navigator_Left.close_drawer(context);
           setState(() {});
         },
       ),

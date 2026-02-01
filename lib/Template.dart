@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 import 'package:gtr_app/Environment.dart';
+import 'package:gtr_app/routes/Navigator_Left.dart';
 import 'package:gtr_app/routes/Routes.dart';
 import 'package:gtr_app/themes/Theme_Data.dart';
-import 'package:gtr_app/routes/Left_Navigator.dart';
 
 void main() {
   usePathUrlStrategy();
@@ -65,7 +65,7 @@ class _TemplateState extends State<Template> {
         ),
       ),
 
-      drawer: const Left_Navigator(),
+      drawer: const Navigator_Left(),
     );
   }
 }

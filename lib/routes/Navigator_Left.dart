@@ -4,8 +4,8 @@ import 'package:gtr_app/Environment.dart';
 import 'package:gtr_app/routes/Routes.dart';
 import 'package:gtr_app/utilities/Debug.dart';
 
-class Left_Navigator extends StatefulWidget {
-  const Left_Navigator({super.key});
+class Navigator_Left extends StatefulWidget {
+  const Navigator_Left({super.key});
 
   static void close_drawer(BuildContext context) {
     if (Navigator.canPop(context)) {
@@ -14,10 +14,10 @@ class Left_Navigator extends StatefulWidget {
   }
 
   @override
-  State<Left_Navigator> createState() => _Left_NavigatorState();
+  State<Navigator_Left> createState() => _Navigator_LeftState();
 }
 
-class _Left_NavigatorState extends State<Left_Navigator> {
+class _Navigator_LeftState extends State<Navigator_Left> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -33,7 +33,7 @@ class _Left_NavigatorState extends State<Left_Navigator> {
             ), //
           ),
 
-          // Option
+          // department
           ExpansionTile(
             leading: Icon(Icons.list_alt_outlined),
             title: Text('Department'),
@@ -72,7 +72,8 @@ class _Left_NavigatorState extends State<Left_Navigator> {
               ),
             ],
           ),
-          // Demo
+
+          // program
           ExpansionTile(
             leading: Icon(Icons.list_alt_outlined),
             title: Text('Program'),
@@ -95,7 +96,8 @@ class _Left_NavigatorState extends State<Left_Navigator> {
               ),
             ],
           ),
-          // Demo
+
+          // project
           ExpansionTile(
             leading: Icon(Icons.list_alt_outlined),
             title: Text('Project'),
@@ -126,7 +128,8 @@ class _Left_NavigatorState extends State<Left_Navigator> {
               ),
             ],
           ),
-          // Demo
+
+          // Lab & Services
           ExpansionTile(
             leading: Icon(Icons.list_alt_outlined),
             title: Text('Lab & Services'),
@@ -157,7 +160,7 @@ class _Left_NavigatorState extends State<Left_Navigator> {
               ),
             ],
           ),
-          // Demo
+          // courses
           ExpansionTile(
             leading: Icon(Icons.list_alt_outlined),
             title: Text('Courses'),
@@ -196,16 +199,7 @@ class _Left_NavigatorState extends State<Left_Navigator> {
               ),
             ],
           ),
-
-          ListTile(
-            leading: Icon(Icons.info_outline), //
-            title: Text('Contact Us', overflow: TextOverflow.ellipsis, maxLines: 1),
-            onTap: () {
-              Navigator.of(context).pop(); //
-              Navigator.of(context).push(Routes.Contact_Us());
-            },
-          ),
-
+          // schedule
           ListTile(
             leading: Icon(Icons.info_outline), //
             title: Text('Schedule', overflow: TextOverflow.ellipsis, maxLines: 1),
@@ -224,8 +218,16 @@ class _Left_NavigatorState extends State<Left_Navigator> {
               Navigator.of(context).push(Routes.View_Attendance());
             },
           ),
-
-          // about us
+          // contact us
+          ListTile(
+            leading: Icon(Icons.info_outline), //
+            title: Text('Contact Us', overflow: TextOverflow.ellipsis, maxLines: 1),
+            onTap: () {
+              Navigator.of(context).pop(); //
+              Navigator.of(context).push(Routes.Contact_Us());
+            },
+          ),
+          // thank
           ListTile(
             leading: Icon(Icons.info_outline), //
             title: Text('Contributors', overflow: TextOverflow.ellipsis, maxLines: 1),

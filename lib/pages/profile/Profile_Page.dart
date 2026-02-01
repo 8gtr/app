@@ -9,7 +9,7 @@ import 'package:gtr_app/Environment.dart';
 import 'package:gtr_app/utilities/Debug.dart';
 import 'package:gtr_app/routes/Routes.dart';
 import 'package:gtr_app/themes/Theme_Data.dart';
-import 'package:gtr_app/routes/Left_Navigator.dart';
+import 'package:gtr_app/routes/Navigator_Left.dart';
 
 void main() {
   runApp(const App());
@@ -45,6 +45,15 @@ class _Profile_PageState extends State<Profile_Page> {
     init();
   }
 
+  final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: HOST_API, //
+      connectTimeout: Duration(seconds: 10), //
+      sendTimeout: Duration(seconds: 10), //
+      receiveTimeout: Duration(seconds: 10), //
+    ),
+  );
+
   FlutterSecureStorage secure_storage = FlutterSecureStorage();
   String? access_token;
 
@@ -63,15 +72,6 @@ class _Profile_PageState extends State<Profile_Page> {
   String? telegram_id;
   String? profile_image;
   String? background_image;
-
-  final Dio dio = Dio(
-    BaseOptions(
-      baseUrl: HOST_API, //
-      connectTimeout: Duration(seconds: 10), //
-      sendTimeout: Duration(seconds: 10), //
-      receiveTimeout: Duration(seconds: 10), //
-    ),
-  );
 
   void init() async {
     id = null;
@@ -691,7 +691,7 @@ class _Profile_PageState extends State<Profile_Page> {
         ),
       ),
 
-      drawer: const Left_Navigator(),
+      drawer: const Navigator_Left(),
     );
   }
 }
