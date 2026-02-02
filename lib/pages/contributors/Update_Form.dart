@@ -22,9 +22,12 @@ class App extends StatelessWidget {
       title: HOST_API,
       theme: Theme_Data.get_theme(),
       routes: Routes.routes,
-      home: const Update_Form(
-        title: 'Title', //
-        input: 'Input',
+      home: Update_Form(
+        input_json: {
+          'id': '12345', //
+          'name': 'Sample Name', //
+          'title': 'Update Sample', //
+        },
       ),
       debugShowCheckedModeBanner: false,
     );
@@ -32,36 +35,46 @@ class App extends StatelessWidget {
 }
 
 class Update_Form extends StatefulWidget {
-  const Update_Form({
-    super.key,
-    required this.title, //
-    required this.input, //
-    this.keyboard_type = TextInputType.text,
-  });
+  const Update_Form({super.key, required this.input_json});
 
-  final String title;
-  final String input;
-  final TextInputType keyboard_type;
+  final Map<String, dynamic> input_json;
 
   @override
   State<Update_Form> createState() => _Update_FormState();
 }
 
 class _Update_FormState extends State<Update_Form> {
+  //
+  TextEditingController c_name = TextEditingController();
+  TextEditingController c_title = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    controller_input.text = widget.input;
+
+    debug('Input JSON: ${widget.input_json}');
+
+    c_name.text = widget.input_json['name'];
+    c_title.text = widget.input_json['title'];
     setState(() {});
   }
 
-  //
-  TextEditingController controller_input = TextEditingController();
+  void on_cancel() {
+    Navigator.of(context).pop();
+  }
+
+  void on_update() {
+    Navigator.of(context).pop({
+      'id': widget.input_json['id'], //
+      'name': c_name.text, //
+      'title': c_title.text, //
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Edit ${widget.title}')),
+      appBar: AppBar(title: Text('Update Form')),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(8.0),
@@ -70,24 +83,51 @@ class _Update_FormState extends State<Update_Form> {
               width: 600,
               child: Column(
                 children: [
-                  TextField(
-                    controller: controller_input,
-                    autofocus: true,
-                    decoration: InputDecoration(labelText: widget.title), //
-                    keyboardType: widget.keyboard_type,
-                    onSubmitted: (_) => Navigator.of(context).pop(controller_input.text),
+                  // upload image button
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      // Add image_picker package to pubspec.yaml
+                      // import 'package:image_picker/image_picker.dart';
+                      // final ImagePicker picker = ImagePicker();
+                      // final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                      // if (image != null) {
+                      //   setState(() {
+                      //     // Handle the selected image
+                      //   });
+                      // }
+                    },
+                    icon: Icon(Icons.upload),
+                    label: Text('Upload Image'),
                   ),
 
                   SizedBox(height: 8),
+                  TextField(
+                    controller: c_name,
+                    autofocus: true,
+                    decoration: InputDecoration(labelText: 'Name'), //
+                    keyboardType: TextInputType.text,
+                    onSubmitted: (_) => on_update(),
+                  ),
+                  //
+                  SizedBox(height: 8),
+                  TextField(
+                    controller: c_title,
+                    decoration: InputDecoration(labelText: 'Title'), //
+                    keyboardType: TextInputType.text,
+                    onSubmitted: (_) => on_update(),
+                  ),
+
+                  SizedBox(height: 8),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => on_cancel(),
                         child: Text('Cancel'), //
                       ),
                       OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(controller_input.text),
+                        onPressed: () => on_update(),
                         child: Text('Update'), //
                       ),
                     ],
