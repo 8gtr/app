@@ -112,7 +112,9 @@ class _Contributor_PageState extends State<Contributor_Page> {
                     children: [
                       ReorderableDragStartListener(index: i, child: Icon(Icons.drag_indicator)),
                       SizedBox(width: 8),
-                      Image.asset('assets/logo.png'),
+                      samples[i]['image'] == null
+                          ? Image.asset('assets/logo.png', width: 40, height: 40) //
+                          : Image.network('${MINIO}/${samples[i]['image']}'), //
                     ],
                   ),
                   title: Text(samples[i]['name'] ?? ''),
@@ -128,33 +130,74 @@ class _Contributor_PageState extends State<Contributor_Page> {
                                   'id': samples[i]['_id']['\$oid'] ?? '', //
                                   'name': samples[i]['name'] ?? '', //
                                   'title': samples[i]['title'] ?? '',
+                                  'description': samples[i]['description'] ?? '', //
                                 },
                               ),
                             ),
                           )
                           .then((output_json) async {
                             debug("Output JSON: $output_json");
-                            // debug("Updated Name: $name, Title: $title");
 
                             if (output_json != null) {
-                              await dio
-                                  .post(
-                                    "/contributor/update", //
-                                    data: FormData.fromMap({
-                                      "id": output_json['id'], //
-                                      "name": output_json['name'], //
-                                      "title": output_json['title'], //
-                                    }),
-                                  )
-                                  .then((r) {
-                                    init();
-                                  });
+                              await dio.post(
+                                "/contributor/update", //
+                                data: FormData.fromMap({
+                                  "id": output_json['id'], //
+                                  "name": output_json['name'], //
+                                  "title": output_json['title'], //
+                                  "description": output_json['description'], //
+                                }),
+                              );
                             }
+                            init();
+                            show_snackbar(context: context, message: "Update successful", color: Colors.green);
+                          })
+                          .catchError((e) {
+                            // debug("Error: $e");
+                            show_snackbar(context: context, message: "Update failed", color: Colors.red);
                           });
                     },
                     icon: Icon(Icons.edit),
                   ),
+                  // view details
                   onTap: () {},
+                  // delete
+                  onLongPress: () {
+                    debug("Long pressed on ${samples[i]['name']}");
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Delete ${samples[i]['name']}'),
+                          content: Text('Are you sure?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('Cancel')),
+                            TextButton(
+                              onPressed: () async {
+                                await dio
+                                    .post(
+                                      "/contributor/delete", //
+                                      data: FormData.fromMap({
+                                        "id": samples[i]['_id']['\$oid'] ?? '', //
+                                      }),
+                                    )
+                                    .then((r) {
+                                      init();
+                                      show_snackbar(context: context, message: "Delete successful", color: Colors.green);
+                                    })
+                                    .catchError((e) {
+                                      show_snackbar(context: context, message: "Delete failed", color: Colors.red);
+                                    });
+
+                                Navigator.of(context).pop(); // Dismiss dialog
+                              },
+                              child: Text('Delete', style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                 ),
             ],
           ),
@@ -180,14 +223,15 @@ class _Contributor_PageState extends State<Contributor_Page> {
               FloatingActionButton(
                 heroTag: 'add',
                 onPressed: () async {
-                  try {
-                    await dio.post("/contributor/create", data: FormData.fromMap({}));
-                    if (mounted) init();
-                  } catch (e) {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to create contributor: $e')));
-                    }
-                  }
+                  await dio
+                      .post("/contributor/create", data: FormData.fromMap({}))
+                      .then((r) {
+                        init(); //
+                        // show_snackbar(context: context, message: "Add successful", color: Colors.green);
+                      })
+                      .catchError((e) {
+                        // show_snackbar(context: context, message: "Add failed", color: Colors.red);
+                      });
                 },
                 tooltip: 'Add new contributor',
                 child: const Icon(Icons.add),
@@ -198,4 +242,25 @@ class _Contributor_PageState extends State<Contributor_Page> {
       ),
     );
   }
+}
+
+void show_snackbar({
+  required BuildContext context, //
+  required String message, //
+  required Color color, //
+}) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.white),
+            SizedBox(width: 8),
+            Text(message),
+          ],
+        ),
+        backgroundColor: color,
+      ),
+    );
 }

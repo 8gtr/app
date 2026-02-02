@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:gtr_app/routes/Routes.dart';
 import 'package:gtr_app/Environment.dart';
@@ -27,6 +29,7 @@ class App extends StatelessWidget {
           'id': '12345', //
           'name': 'Sample Name', //
           'title': 'Update Sample', //
+          'description': 'This is a sample description. \nIt can span multiple lines.', //
         },
       ),
       debugShowCheckedModeBanner: false,
@@ -45,8 +48,18 @@ class Update_Form extends StatefulWidget {
 
 class _Update_FormState extends State<Update_Form> {
   //
+  final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: HOST_API, //
+      connectTimeout: Duration(seconds: 10), //
+      sendTimeout: Duration(seconds: 10), //
+      receiveTimeout: Duration(seconds: 10), //
+    ),
+  );
+
   TextEditingController c_name = TextEditingController();
   TextEditingController c_title = TextEditingController();
+  TextEditingController c_description = TextEditingController();
 
   @override
   void initState() {
@@ -54,8 +67,9 @@ class _Update_FormState extends State<Update_Form> {
 
     debug('Input JSON: ${widget.input_json}');
 
-    c_name.text = widget.input_json['name'];
-    c_title.text = widget.input_json['title'];
+    c_name.text = widget.input_json['name'] ?? '';
+    c_title.text = widget.input_json['title'] ?? '';
+    c_description.text = widget.input_json['description'] ?? '';
     setState(() {});
   }
 
@@ -68,6 +82,7 @@ class _Update_FormState extends State<Update_Form> {
       'id': widget.input_json['id'], //
       'name': c_name.text, //
       'title': c_title.text, //
+      'description': c_description.text, //
     });
   }
 
@@ -87,14 +102,29 @@ class _Update_FormState extends State<Update_Form> {
                   OutlinedButton.icon(
                     onPressed: () async {
                       // Add image_picker package to pubspec.yaml
-                      // import 'package:image_picker/image_picker.dart';
-                      // final ImagePicker picker = ImagePicker();
-                      // final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-                      // if (image != null) {
-                      //   setState(() {
-                      //     // Handle the selected image
-                      //   });
-                      // }
+                      final ImagePicker picker = ImagePicker();
+                      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                      if (image == null) {
+                        return;
+                      }
+
+                      await dio
+                          .post(
+                            '/contributor/upload', //
+                            data: FormData.fromMap({
+                              'id': widget.input_json['id'], //
+                              'image': MultipartFile.fromBytes(
+                                await image.readAsBytes(), //
+                                filename: image.name,
+                              ),
+                            }),
+                          )
+                          .then((r) {
+                            show_snackbar(context: context, message: 'Update Success', color: Colors.green);
+                          })
+                          .catchError((e) {
+                            show_snackbar(context: context, message: 'Update Fail', color: Colors.red);
+                          });
                     },
                     icon: Icon(Icons.upload),
                     label: Text('Upload Image'),
@@ -106,7 +136,7 @@ class _Update_FormState extends State<Update_Form> {
                     autofocus: true,
                     decoration: InputDecoration(labelText: 'Name'), //
                     keyboardType: TextInputType.text,
-                    onSubmitted: (_) => on_update(),
+                    // onSubmitted: (_) => on_update(),
                   ),
                   //
                   SizedBox(height: 8),
@@ -114,7 +144,18 @@ class _Update_FormState extends State<Update_Form> {
                     controller: c_title,
                     decoration: InputDecoration(labelText: 'Title'), //
                     keyboardType: TextInputType.text,
-                    onSubmitted: (_) => on_update(),
+                    // onSubmitted: (_) => on_update(),
+                  ),
+
+                  SizedBox(height: 8),
+
+                  //multi line text field
+                  TextField(
+                    controller: c_description,
+                    decoration: InputDecoration(labelText: 'Description', alignLabelWithHint: true),
+                    keyboardType: TextInputType.multiline,
+                    minLines: 5,
+                    maxLines: null,
                   ),
 
                   SizedBox(height: 8),
@@ -140,4 +181,25 @@ class _Update_FormState extends State<Update_Form> {
       ),
     );
   }
+}
+
+void show_snackbar({
+  required BuildContext context, //
+  required String message, //
+  required Color color, //
+}) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.white),
+            SizedBox(width: 8),
+            Text(message),
+          ],
+        ),
+        backgroundColor: color,
+      ),
+    );
 }
