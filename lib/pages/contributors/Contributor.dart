@@ -84,7 +84,6 @@ class _Contributor_PageState extends State<Contributor_Page> {
   }
 
   void search_contributors(String query) {
-    // Implement search logic here
     debug("Search query: $query");
     samples = all_samples.where((contributor) => (contributor['name'] ?? '').toLowerCase().contains(query.toLowerCase()) || (contributor['position'] ?? '').toLowerCase().contains(query.toLowerCase())).toList();
     setState(() {});
@@ -135,12 +134,18 @@ class _Contributor_PageState extends State<Contributor_Page> {
               debug(samples[new_order]['order']);
               debug("Reorder: $old_order -> $new_order");
 
+              int old_order_value = samples[old_order]['order'];
+              int new_order_value = samples[new_order]['order'];
+
+              samples.insert(new_order, samples.removeAt(old_order));
+              setState(() {});
+
               await dio
                   .post(
                     "/contributor/reorder", //
                     data: FormData.fromMap({
-                      "old_order": samples[old_order]['order'], //
-                      "new_order": samples[new_order]['order'], //
+                      "old_order": old_order_value, //
+                      "new_order": new_order_value, //
                     }),
                   )
                   .then((r) {

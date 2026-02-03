@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gtr_app/pages/attendance/View_Attendance_001.dart';
 
 import 'package:gtr_app/pages/contributors/Contributor.dart';
 import 'package:gtr_app/pages/Contact_Us.dart';
 import 'package:gtr_app/pages/Schedule.dart';
 import 'package:gtr_app/pages/attendance/QR_Generator_Page.dart';
 import 'package:gtr_app/pages/attendance/QR_Scan_Page.dart';
-import 'package:gtr_app/pages/attendance/View_Attendance_Page.dart';
 import 'package:gtr_app/pages/courses/Mobile_Application.dart';
 import 'package:gtr_app/pages/courses/Network_Administrator.dart';
 import 'package:gtr_app/pages/courses/Object_Oriented_Programming.dart';
@@ -31,7 +31,7 @@ class Routes {
   static Sign_In() => _route(Sign_In_Page());
   static Sign_Up() => _route(Sign_Up_Page());
   static Reset() => _route(Reset_Page());
-  static View_Attendance() => _route(View_Attendance_Page());
+  static View_Attendance() => _route(View_Attendance_001());
   static QR_Scan() => _route(QR_Scan_Page());
   static QR_Generator() => _route(QR_Generator_Page());
 

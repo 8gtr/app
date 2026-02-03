@@ -98,36 +98,63 @@ class _Update_FormState extends State<Update_Form> {
               width: 600,
               child: Column(
                 children: [
-                  // upload image button
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      // Add image_picker package to pubspec.yaml
-                      final ImagePicker picker = ImagePicker();
-                      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-                      if (image == null) {
-                        return;
-                      }
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      // upload image button
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          // Add image_picker package to pubspec.yaml
+                          final ImagePicker picker = ImagePicker();
+                          final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                          if (image == null) {
+                            return;
+                          }
 
-                      await dio
-                          .post(
-                            '/contributor/upload', //
-                            data: FormData.fromMap({
-                              'id': widget.input_json['id'], //
-                              'image': MultipartFile.fromBytes(
-                                await image.readAsBytes(), //
-                                filename: image.name,
-                              ),
-                            }),
-                          )
-                          .then((r) {
-                            show_snackbar(context: context, message: 'Update Success', color: Colors.green);
-                          })
-                          .catchError((e) {
-                            show_snackbar(context: context, message: 'Update Fail', color: Colors.red);
-                          });
-                    },
-                    icon: Icon(Icons.upload),
-                    label: Text('Upload Image'),
+                          await dio
+                              .post(
+                                '/contributor/upload', //
+                                data: FormData.fromMap({
+                                  'id': widget.input_json['id'], //
+                                  'image': MultipartFile.fromBytes(
+                                    await image.readAsBytes(), //
+                                    filename: image.name,
+                                  ),
+                                }),
+                              )
+                              .then((r) {
+                                show_snackbar(context: context, message: 'Update Success', color: Colors.green);
+                              })
+                              .catchError((e) {
+                                show_snackbar(context: context, message: 'Update Fail', color: Colors.red);
+                              });
+                        },
+                        icon: Icon(Icons.upload),
+                        label: Text('Upload'),
+                      ),
+
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          //
+                          final ImagePicker picker = ImagePicker();
+                          final XFile? image = await picker.pickImage(source: ImageSource.camera);
+                          if (image == null) {
+                            return;
+                          }
+
+                          // await dio
+                          //     .post('/contributor/upload', data: FormData.fromMap({'id': widget.input_json['id'], 'image': MultipartFile.fromBytes(await image.readAsBytes(), filename: image.name)}))
+                          //     .then((r) {
+                          //       show_snackbar(context: context, message: 'Upload Success', color: Colors.green);
+                          //     })
+                          //     .catchError((e) {
+                          //       show_snackbar(context: context, message: 'Upload Fail', color: Colors.red);
+                          //     });
+                        },
+                        label: Text("Camera"),
+                        icon: Icon(Icons.camera_alt),
+                      ),
+                    ],
                   ),
 
                   SizedBox(height: 8),
