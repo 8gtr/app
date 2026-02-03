@@ -23,8 +23,12 @@ class App extends StatelessWidget {
       theme: Theme_Data.get_theme(),
       routes: Routes.routes,
       home: const View_Form(
-        title: 'Title', //
-        input: 'Input',
+        input_json: {
+          'image': "abc.png", //
+          'name': 'Sample Name', //
+          'position': 'View Sample', //
+          'description': 'This is a sample description. \nIt can span multiple lines.', //
+        },
       ),
       debugShowCheckedModeBanner: false,
     );
@@ -33,35 +37,24 @@ class App extends StatelessWidget {
 
 class View_Form extends StatefulWidget {
   const View_Form({
-    super.key,
-    required this.title, //
-    required this.input, //
-    this.keyboard_type = TextInputType.text,
+    super.key, //
+    required this.input_json, //
   });
 
-  final String title;
-  final String input;
-  final TextInputType keyboard_type;
+  final Map<String, dynamic> input_json;
 
   @override
   State<View_Form> createState() => _View_FormState();
 }
 
 class _View_FormState extends State<View_Form> {
-  @override
-  void initState() {
-    super.initState();
-    controller_input.text = widget.input;
-    setState(() {});
-  }
-
   //
   TextEditingController controller_input = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Edit ${widget.title}')),
+      appBar: AppBar(title: Text('View')),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(8.0),
@@ -70,25 +63,36 @@ class _View_FormState extends State<View_Form> {
               width: 600,
               child: Column(
                 children: [
-                  TextField(
-                    controller: controller_input,
-                    autofocus: true,
-                    decoration: InputDecoration(labelText: widget.title), //
-                    keyboardType: widget.keyboard_type,
-                    onSubmitted: (_) => Navigator.of(context).pop(controller_input.text),
+                  widget.input_json['image'] == ''
+                      ? //
+                        Image.asset('assets/logo.png', width: 200, height: 200)
+                      : Image.network('${MINIO}/${widget.input_json['image']}', width: 200, height: 200, fit: BoxFit.cover),
+
+                  Text(
+                    widget.input_json['name'] ?? '', //
+                    style: TextStyle(
+                      fontSize: 24, //
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
 
-                  SizedBox(height: 8),
+                  // SizedBox(height: 16),
+                  Text(
+                    widget.input_json['position'] ?? '',
+                    style: TextStyle(
+                      fontSize: 20, //
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+
+                  SizedBox(height: 16),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text('Cancel'), //
-                      ),
-                      OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(controller_input.text),
-                        child: Text('Update'), //
+                      Expanded(
+                        child: Text(
+                          widget.input_json['description'] ?? '',
+                          style: TextStyle(fontSize: 16), //
+                        ),
                       ),
                     ],
                   ),

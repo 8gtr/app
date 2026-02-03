@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:gtr_app/Environment.dart';
 import 'package:gtr_app/pages/contributors/Update_Form.dart';
+import 'package:gtr_app/pages/contributors/View_Form.dart';
 import 'package:gtr_app/themes/Theme_Data.dart';
 import 'package:gtr_app/routes/Routes.dart';
 import 'package:gtr_app/routes/Navigator_Left.dart';
@@ -47,12 +48,16 @@ class _Contributor_PageState extends State<Contributor_Page> {
   FlutterSecureStorage secure_storage = FlutterSecureStorage();
   String? access_token;
 
+  List<Map<String, dynamic>> all_samples = [];
   List<Map<String, dynamic>> samples = [];
+
+  bool is_search = false;
+
+  TextEditingController c_search = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // debug('Contributor Page Loaded');
     init();
   }
 
@@ -67,16 +72,56 @@ class _Contributor_PageState extends State<Contributor_Page> {
         )
         .then((r) {
           // debug("Contributor Data: ${r.data}");
+          all_samples = List<Map<String, dynamic>>.from(r.data);
           samples = List<Map<String, dynamic>>.from(r.data);
           if (!mounted) return;
           setState(() {});
         });
+
+    if (is_search) {
+      search_contributors(c_search.text);
+    }
+  }
+
+  void search_contributors(String query) {
+    // Implement search logic here
+    debug("Search query: $query");
+    samples = all_samples.where((contributor) => (contributor['name'] ?? '').toLowerCase().contains(query.toLowerCase()) || (contributor['position'] ?? '').toLowerCase().contains(query.toLowerCase())).toList();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Contributor Page")),
+      appBar: AppBar(
+        title: is_search
+            ? TextField(
+                controller: c_search,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search ...',
+                  border: InputBorder.none, //
+                ),
+                onChanged: (value) {
+                  search_contributors(value);
+                },
+              )
+            : Text("Contributor Page"), //
+        actionsPadding: EdgeInsets.only(right: 16),
+        actions: [
+          IconButton(
+            onPressed: () {
+              is_search = !is_search;
+              if (!is_search) {
+                c_search.clear();
+                samples = List<Map<String, dynamic>>.from(all_samples);
+              }
+              setState(() {});
+            },
+            icon: is_search ? Icon(Icons.close) : Icon(Icons.search),
+          ),
+        ],
+      ),
       body: Center(
         child: SizedBox(
           width: 600,
@@ -107,18 +152,19 @@ class _Contributor_PageState extends State<Contributor_Page> {
               for (int i = 0; i < samples.length; i++)
                 ListTile(
                   key: ValueKey(samples[i]['order']),
+                  contentPadding: const EdgeInsets.only(left: 8, right: 8),
                   leading: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ReorderableDragStartListener(index: i, child: Icon(Icons.drag_indicator)),
+                      !is_search ? ReorderableDragStartListener(index: i, child: Icon(Icons.drag_indicator)) : SizedBox.shrink(),
                       SizedBox(width: 8),
                       samples[i]['image'] == null
-                          ? Image.asset('assets/logo.png', width: 40, height: 40) //
-                          : Image.network('${MINIO}/${samples[i]['image']}'), //
+                          ? Image.asset('assets/logo.png', width: 50, height: 50, fit: BoxFit.cover) //
+                          : Image.network('${MINIO}/${samples[i]['image']}', width: 50, height: 50, fit: BoxFit.cover), //
                     ],
                   ),
                   title: Text(samples[i]['name'] ?? ''),
-                  subtitle: Text(samples[i]['title'] ?? ''),
+                  subtitle: Text(samples[i]['position'] ?? ''),
                   trailing: IconButton(
                     onPressed: () {
                       debug(samples[i]);
@@ -129,7 +175,7 @@ class _Contributor_PageState extends State<Contributor_Page> {
                                 input_json: {
                                   'id': samples[i]['_id']['\$oid'] ?? '', //
                                   'name': samples[i]['name'] ?? '', //
-                                  'title': samples[i]['title'] ?? '',
+                                  'position': samples[i]['position'] ?? '',
                                   'description': samples[i]['description'] ?? '', //
                                 },
                               ),
@@ -137,14 +183,13 @@ class _Contributor_PageState extends State<Contributor_Page> {
                           )
                           .then((output_json) async {
                             debug("Output JSON: $output_json");
-
                             if (output_json != null) {
                               await dio.post(
                                 "/contributor/update", //
                                 data: FormData.fromMap({
                                   "id": output_json['id'], //
                                   "name": output_json['name'], //
-                                  "title": output_json['title'], //
+                                  "position": output_json['position'], //
                                   "description": output_json['description'], //
                                 }),
                               );
@@ -153,14 +198,27 @@ class _Contributor_PageState extends State<Contributor_Page> {
                             show_snackbar(context: context, message: "Update successful", color: Colors.green);
                           })
                           .catchError((e) {
-                            // debug("Error: $e");
                             show_snackbar(context: context, message: "Update failed", color: Colors.red);
                           });
                     },
                     icon: Icon(Icons.edit),
                   ),
                   // view details
-                  onTap: () {},
+                  onTap: () {
+                    debug("Tapped on ${samples[i]['name']}");
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => View_Form(
+                          input_json: {
+                            'image': samples[i]['image'] ?? '', //
+                            'name': samples[i]['name'] ?? '', //
+                            'position': samples[i]['position'] ?? '', //
+                            'description': samples[i]['description'] ?? '', //
+                          },
+                        ),
+                      ),
+                    );
+                  },
                   // delete
                   onLongPress: () {
                     debug("Long pressed on ${samples[i]['name']}");
@@ -209,24 +267,21 @@ class _Contributor_PageState extends State<Contributor_Page> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               FloatingActionButton(
-                heroTag: 'search',
-                onPressed: () {
-                  // TODO: Implement search functionality
-                },
-                tooltip: 'Search contributors',
-                child: const Icon(Icons.search),
-              ),
-
-              FloatingActionButton(
                 heroTag: 'add',
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                 onPressed: () async {
                   await dio
-                      .post("/contributor/create", data: FormData.fromMap({}))
+                      .post(
+                        "/contributor/create", //
+                        data: FormData.fromMap({}),
+                      )
                       .then((r) {
-                        init(); //
+                        init();
                         // show_snackbar(context: context, message: "Add successful", color: Colors.green);
                       })
                       .catchError((e) {
@@ -261,6 +316,9 @@ void show_snackbar({
           ],
         ),
         backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(bottom: 8, left: 8, right: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       ),
     );
 }

@@ -28,7 +28,7 @@ class App extends StatelessWidget {
         input_json: {
           'id': '12345', //
           'name': 'Sample Name', //
-          'title': 'Update Sample', //
+          'position': 'Update Sample', //
           'description': 'This is a sample description. \nIt can span multiple lines.', //
         },
       ),
@@ -58,7 +58,7 @@ class _Update_FormState extends State<Update_Form> {
   );
 
   TextEditingController c_name = TextEditingController();
-  TextEditingController c_title = TextEditingController();
+  TextEditingController c_position = TextEditingController();
   TextEditingController c_description = TextEditingController();
 
   @override
@@ -68,7 +68,7 @@ class _Update_FormState extends State<Update_Form> {
     debug('Input JSON: ${widget.input_json}');
 
     c_name.text = widget.input_json['name'] ?? '';
-    c_title.text = widget.input_json['title'] ?? '';
+    c_position.text = widget.input_json['position'] ?? '';
     c_description.text = widget.input_json['description'] ?? '';
     setState(() {});
   }
@@ -81,7 +81,7 @@ class _Update_FormState extends State<Update_Form> {
     Navigator.of(context).pop({
       'id': widget.input_json['id'], //
       'name': c_name.text, //
-      'title': c_title.text, //
+      'position': c_position.text, //
       'description': c_description.text, //
     });
   }
@@ -141,8 +141,8 @@ class _Update_FormState extends State<Update_Form> {
                   //
                   SizedBox(height: 8),
                   TextField(
-                    controller: c_title,
-                    decoration: InputDecoration(labelText: 'Title'), //
+                    controller: c_position,
+                    decoration: InputDecoration(labelText: 'Position'), //
                     keyboardType: TextInputType.text,
                     // onSubmitted: (_) => on_update(),
                   ),
