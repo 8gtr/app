@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 
 import 'package:gtr_app/routes/Routes.dart';
 import 'package:gtr_app/Environment.dart';
@@ -101,10 +102,8 @@ class _Update_FormState extends State<Update_Form> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      // upload image button
                       OutlinedButton.icon(
                         onPressed: () async {
-                          // Add image_picker package to pubspec.yaml
                           final ImagePicker picker = ImagePicker();
                           final XFile? image = await picker.pickImage(source: ImageSource.gallery);
                           if (image == null) {
@@ -133,23 +132,32 @@ class _Update_FormState extends State<Update_Form> {
                         label: Text('Upload'),
                       ),
 
+                      // if i use mobile browser, open camera
                       OutlinedButton.icon(
                         onPressed: () async {
-                          //
                           final ImagePicker picker = ImagePicker();
                           final XFile? image = await picker.pickImage(source: ImageSource.camera);
                           if (image == null) {
                             return;
                           }
 
-                          // await dio
-                          //     .post('/contributor/upload', data: FormData.fromMap({'id': widget.input_json['id'], 'image': MultipartFile.fromBytes(await image.readAsBytes(), filename: image.name)}))
-                          //     .then((r) {
-                          //       show_snackbar(context: context, message: 'Upload Success', color: Colors.green);
-                          //     })
-                          //     .catchError((e) {
-                          //       show_snackbar(context: context, message: 'Upload Fail', color: Colors.red);
-                          //     });
+                          await dio
+                              .post(
+                                '/contributor/upload', //
+                                data: FormData.fromMap({
+                                  'id': widget.input_json['id'], //
+                                  'image': MultipartFile.fromBytes(
+                                    await image.readAsBytes(), //
+                                    filename: image.name,
+                                  ),
+                                }),
+                              )
+                              .then((r) {
+                                show_snackbar(context: context, message: 'Update Success', color: Colors.green);
+                              })
+                              .catchError((e) {
+                                show_snackbar(context: context, message: 'Update Fail', color: Colors.red);
+                              });
                         },
                         label: Text("Camera"),
                         icon: Icon(Icons.camera_alt),
