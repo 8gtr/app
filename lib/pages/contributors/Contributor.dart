@@ -105,7 +105,7 @@ class _Contributor_PageState extends State<Contributor_Page> {
                   search_contributors(value);
                 },
               )
-            : Text("Contributor Page"), //
+            : Text("Contributors"), //
         actionsPadding: EdgeInsets.only(right: 16),
         actions: [
           IconButton(

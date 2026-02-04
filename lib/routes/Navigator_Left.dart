@@ -161,44 +161,44 @@ class _Navigator_LeftState extends State<Navigator_Left> {
             ],
           ),
           // courses
-          ExpansionTile(
-            leading: Icon(Icons.list_alt_outlined),
-            title: Text('Courses'),
-            children: [
-              ListTile(
-                leading: Icon(Icons.school_outlined), //
-                title: Text('Operating System', overflow: TextOverflow.ellipsis, maxLines: 1),
-                onTap: () {
-                  Navigator.of(context).pop(); //
-                  Navigator.of(context).push(Routes.Operating_System());
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.school_outlined), //
-                title: Text('Mobile Application', overflow: TextOverflow.ellipsis, maxLines: 1),
-                onTap: () {
-                  Navigator.of(context).pop(); //
-                  Navigator.of(context).push(Routes.Mobile_Application());
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.school_outlined), //
-                title: Text('Object Oriented Programming', overflow: TextOverflow.ellipsis, maxLines: 1),
-                onTap: () {
-                  Navigator.of(context).pop(); //
-                  Navigator.of(context).push(Routes.Object_Oriented_Programming());
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.school_outlined), //
-                title: Text('Network Administrator', overflow: TextOverflow.ellipsis, maxLines: 1),
-                onTap: () {
-                  Navigator.of(context).pop(); //
-                  Navigator.of(context).push(Routes.Network_Administrator());
-                },
-              ),
-            ],
-          ),
+          // ExpansionTile(
+          //   leading: Icon(Icons.list_alt_outlined),
+          //   title: Text('Courses'),
+          //   children: [
+          //     ListTile(
+          //       leading: Icon(Icons.school_outlined), //
+          //       title: Text('Operating System', overflow: TextOverflow.ellipsis, maxLines: 1),
+          //       onTap: () {
+          //         Navigator.of(context).pop(); //
+          //         Navigator.of(context).push(Routes.Operating_System());
+          //       },
+          //     ),
+          //     ListTile(
+          //       leading: Icon(Icons.school_outlined), //
+          //       title: Text('Mobile Application', overflow: TextOverflow.ellipsis, maxLines: 1),
+          //       onTap: () {
+          //         Navigator.of(context).pop(); //
+          //         Navigator.of(context).push(Routes.Mobile_Application());
+          //       },
+          //     ),
+          //     ListTile(
+          //       leading: Icon(Icons.school_outlined), //
+          //       title: Text('Object Oriented Programming', overflow: TextOverflow.ellipsis, maxLines: 1),
+          //       onTap: () {
+          //         Navigator.of(context).pop(); //
+          //         Navigator.of(context).push(Routes.Object_Oriented_Programming());
+          //       },
+          //     ),
+          //     ListTile(
+          //       leading: Icon(Icons.school_outlined), //
+          //       title: Text('Network Administrator', overflow: TextOverflow.ellipsis, maxLines: 1),
+          //       onTap: () {
+          //         Navigator.of(context).pop(); //
+          //         Navigator.of(context).push(Routes.Network_Administrator());
+          //       },
+          //     ),
+          //   ],
+          // ),
           // schedule
           ListTile(
             leading: Icon(Icons.info_outline), //

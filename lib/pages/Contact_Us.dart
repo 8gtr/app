@@ -42,12 +42,27 @@ class _Contact_Us_PageState extends State<Contact_Us_Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Contact Us Page")),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Contact Us Page Content Here'), //
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: SizedBox(
+              width: 600,
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  ListTile(leading: Icon(Icons.phone), title: Text('(+855)12 407910')),
+                  ListTile(leading: Icon(Icons.email), title: Text('infogtr@itc.edu.kh')),
+                  ListTile(leading: Icon(Icons.location_on), title: Text('Room J-504, Building J, ITC')),
+                  ListTile(leading: Icon(Icons.facebook), title: Text('facebook.com/itcgtr')),
+
+                  SizedBox(height: 20),
+
+                  // todo: put google map here
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

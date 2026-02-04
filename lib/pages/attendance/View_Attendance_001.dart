@@ -58,7 +58,7 @@ class _View_Attendance_001State extends State<View_Attendance_001> {
   void init() async {
     dio
         .post(
-          '/attendance/attendances',
+          '/attendance/view',
           data: FormData.fromMap({}), //
         )
         .then((r) {
@@ -118,7 +118,7 @@ class _View_Attendance_001State extends State<View_Attendance_001> {
                   search(value);
                 },
               )
-            : Text("Attendance Page"), //
+            : Text("View Attendance"), //
         actionsPadding: EdgeInsets.only(right: 16),
         actions: [
           IconButton(
@@ -149,7 +149,7 @@ class _View_Attendance_001State extends State<View_Attendance_001> {
                             child: Container(
                               alignment: Alignment.centerLeft, //
                               child: Text(
-                                search_data[0].keys.elementAt(0), //
+                                "Student Name", //
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -158,7 +158,7 @@ class _View_Attendance_001State extends State<View_Attendance_001> {
                             width: 50, //
                             alignment: Alignment.center,
                             child: Text(
-                              search_data[0].keys.elementAt(1), //
+                              "Code", //
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -166,7 +166,7 @@ class _View_Attendance_001State extends State<View_Attendance_001> {
                             width: 50, //
                             alignment: Alignment.center,
                             child: Text(
-                              search_data[0].keys.elementAt(2), //
+                              "Type", //
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -174,7 +174,7 @@ class _View_Attendance_001State extends State<View_Attendance_001> {
                             width: 100, //
                             alignment: Alignment.center,
                             child: Text(
-                              search_data[0].keys.elementAt(3), //
+                              "Scanned At", //
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),

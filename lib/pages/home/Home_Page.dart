@@ -1,4 +1,7 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:gtr_app/routes/Navigator_Bottom.dart';
+import 'package:gtr_app/routes/Routes.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:gtr_app/Environment.dart';
@@ -17,9 +20,10 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: TITLE, //
-      theme: Theme_Data.get_theme(), //
-      home: const Home_Page(), //
-      debugShowCheckedModeBanner: false, //
+      theme: Theme_Data.get_theme(),
+      home: const Navigator_Bottom_Page(), //
+      routes: Routes.routes,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -49,12 +53,19 @@ class _Home_PageState extends State<Home_Page> {
 
   @override
   Widget build(BuildContext context) {
+    //
+    List<Widget> images = [
+      Image.asset('assets/images/image_1.jpeg'), //
+      Image.asset('assets/images/image_2.jpeg'), //
+      Image.asset('assets/images/image_3.png'), //
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Home Page'),
+            Text('Welcome to GTR App'), //
             Text(
               VERSION,
               style: const TextStyle(
@@ -66,13 +77,35 @@ class _Home_PageState extends State<Home_Page> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //
-            Text('Welcome to GTR App Home Page'), //
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: SizedBox(
+              width: 600,
+              child: Column(
+                children: [
+                  Text('Welcome to GTR App Home Page'), //
+                  // Container(
+                  //   child: CarouselSlider(
+                  //     options: CarouselOptions(
+                  //       aspectRatio: 2.0, //
+                  //       enlargeCenterPage: true,
+                  //       enableInfiniteScroll: false,
+                  //       initialPage: 2,
+                  //       autoPlay: true,
+                  //     ),
+                  //     items: images,
+                  //   ),
+                  // ),
+                  CarouselSlider(
+                    options: CarouselOptions(enlargeCenterPage: true, autoPlay: true),
+                    items: images.map((item) => Center(child: item)).toList(),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
       drawer: Navigator_Left(),

@@ -275,13 +275,15 @@ class _Profile_PageState extends State<Profile_Page> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
+                        // QR attendance
                         OutlinedButton(
                           onPressed: () {
                             Navigator.of(context).push(Routes.QR_Generator());
                           },
-                          child: Text('Check Attendance'),
+                          child: Text('QR Generate'),
                         ), //
-                        //
+                        // face attendance
+                        // OutlinedButton(onPressed: () {}, child: Text('Face Attendance')), //
                       ],
                     ),
                   ],
@@ -315,7 +317,7 @@ class _Profile_PageState extends State<Profile_Page> {
                                   }
                                 });
                           },
-                          child: Text('Scan Attendance'),
+                          child: Text('QR Scan'),
                         ), //
                         //
                       ],

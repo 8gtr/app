@@ -9,6 +9,7 @@
 # packages, and plugins designed to encourage good coding practices.
 analyzer:
   errors:
+    dead_code: ignore
     file_names: ignore
     avoid_print: ignore
     unused_import: ignore
