@@ -48,12 +48,14 @@ class _Contributor_PageState extends State<Contributor_Page> {
   FlutterSecureStorage secure_storage = FlutterSecureStorage();
   String? access_token;
 
-  List<Map<String, dynamic>> all_samples = [];
-  List<Map<String, dynamic>> samples = [];
+  List<Map<String, dynamic>> all_data = [];
+  List<Map<String, dynamic>> search_data = [];
 
   bool is_search = false;
 
   TextEditingController c_search = TextEditingController();
+
+  bool is_admin = false;
 
   @override
   void initState() {
@@ -72,8 +74,8 @@ class _Contributor_PageState extends State<Contributor_Page> {
         )
         .then((r) {
           // debug("Contributor Data: ${r.data}");
-          all_samples = List<Map<String, dynamic>>.from(r.data);
-          samples = List<Map<String, dynamic>>.from(r.data);
+          all_data = List<Map<String, dynamic>>.from(r.data);
+          search_data = List<Map<String, dynamic>>.from(r.data);
           if (!mounted) return;
           setState(() {});
         });
@@ -85,7 +87,7 @@ class _Contributor_PageState extends State<Contributor_Page> {
 
   void search_contributors(String query) {
     debug("Search query: $query");
-    samples = all_samples.where((contributor) => (contributor['name'] ?? '').toLowerCase().contains(query.toLowerCase()) || (contributor['position'] ?? '').toLowerCase().contains(query.toLowerCase())).toList();
+    search_data = all_data.where((contributor) => (contributor['name'] ?? '').toLowerCase().contains(query.toLowerCase()) || (contributor['position'] ?? '').toLowerCase().contains(query.toLowerCase())).toList();
     setState(() {});
   }
 
@@ -113,7 +115,7 @@ class _Contributor_PageState extends State<Contributor_Page> {
               is_search = !is_search;
               if (!is_search) {
                 c_search.clear();
-                samples = List<Map<String, dynamic>>.from(all_samples);
+                search_data = List<Map<String, dynamic>>.from(all_data);
               }
               setState(() {});
             },
@@ -130,14 +132,10 @@ class _Contributor_PageState extends State<Contributor_Page> {
             onReorder: (int old_order, int new_order) async {
               if (new_order > old_order) new_order -= 1;
 
-              debug(samples[old_order]['order']);
-              debug(samples[new_order]['order']);
-              debug("Reorder: $old_order -> $new_order");
+              int old_order_value = search_data[old_order]['order'];
+              int new_order_value = search_data[new_order]['order'];
 
-              int old_order_value = samples[old_order]['order'];
-              int new_order_value = samples[new_order]['order'];
-
-              samples.insert(new_order, samples.removeAt(old_order));
+              search_data.insert(new_order, search_data.removeAt(old_order));
               setState(() {});
 
               await dio
@@ -154,71 +152,75 @@ class _Contributor_PageState extends State<Contributor_Page> {
                   });
             },
             children: [
-              for (int i = 0; i < samples.length; i++)
+              for (int i = 0; i < search_data.length; i++)
                 ListTile(
-                  key: ValueKey(samples[i]['order']),
+                  key: ValueKey(search_data[i]['order']),
                   contentPadding: const EdgeInsets.only(left: 8, right: 8),
                   leading: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      !is_search ? ReorderableDragStartListener(index: i, child: Icon(Icons.drag_indicator)) : SizedBox.shrink(),
+                      is_search || !is_admin
+                          ? SizedBox.shrink() //
+                          : ReorderableDragStartListener(index: i, child: Icon(Icons.drag_indicator)),
                       SizedBox(width: 8),
-                      samples[i]['image'] == null
+                      search_data[i]['image'] == null
                           ? Image.network('$MINIO_PUBLIC/logo.png', width: 50, height: 50, fit: BoxFit.cover) //
-                          : Image.network('$MINIO_PUBLIC/${samples[i]['image']}', width: 50, height: 50, fit: BoxFit.cover), //
+                          : Image.network('$MINIO_PUBLIC/${search_data[i]['image']}', width: 50, height: 50, fit: BoxFit.cover), //
                     ],
                   ),
-                  title: Text(samples[i]['name'] ?? ''),
-                  subtitle: Text(samples[i]['position'] ?? ''),
-                  trailing: IconButton(
-                    onPressed: () {
-                      debug(samples[i]);
-                      Navigator.of(context)
-                          .push(
-                            MaterialPageRoute(
-                              builder: (context) => Update_Form(
-                                input_json: {
-                                  'id': samples[i]['_id']['\$oid'] ?? '', //
-                                  'name': samples[i]['name'] ?? '', //
-                                  'position': samples[i]['position'] ?? '',
-                                  'description': samples[i]['description'] ?? '', //
-                                },
-                              ),
-                            ),
-                          )
-                          .then((output_json) async {
-                            debug("Output JSON: $output_json");
-                            if (output_json != null) {
-                              await dio.post(
-                                "/contributor/update", //
-                                data: FormData.fromMap({
-                                  "id": output_json['id'], //
-                                  "name": output_json['name'], //
-                                  "position": output_json['position'], //
-                                  "description": output_json['description'], //
-                                }),
-                              );
-                            }
-                            init();
-                            show_snackbar(context: context, message: "Update successful", color: Colors.green);
-                          })
-                          .catchError((e) {
-                            show_snackbar(context: context, message: "Update failed", color: Colors.red);
-                          });
-                    },
-                    icon: Icon(Icons.edit),
-                  ),
+                  title: Text(search_data[i]['name'] ?? ''),
+                  subtitle: Text(search_data[i]['position'] ?? ''),
+                  trailing: !is_admin
+                      ? SizedBox.shrink() //
+                      : IconButton(
+                          onPressed: () {
+                            debug(search_data[i]);
+                            Navigator.of(context)
+                                .push(
+                                  MaterialPageRoute(
+                                    builder: (context) => Update_Form(
+                                      input_json: {
+                                        'id': search_data[i]['_id']['\$oid'] ?? '', //
+                                        'name': search_data[i]['name'] ?? '', //
+                                        'position': search_data[i]['position'] ?? '',
+                                        'description': search_data[i]['description'] ?? '', //
+                                      },
+                                    ),
+                                  ),
+                                )
+                                .then((output_json) async {
+                                  debug("Output JSON: $output_json");
+                                  if (output_json != null) {
+                                    await dio.post(
+                                      "/contributor/update", //
+                                      data: FormData.fromMap({
+                                        "id": output_json['id'], //
+                                        "name": output_json['name'], //
+                                        "position": output_json['position'], //
+                                        "description": output_json['description'], //
+                                      }),
+                                    );
+                                  }
+                                  init();
+                                  show_snackbar(context: context, message: "Update successful", color: Colors.green);
+                                })
+                                .catchError((e) {
+                                  show_snackbar(context: context, message: "Update failed", color: Colors.red);
+                                });
+                          },
+                          icon: Icon(Icons.edit),
+                        ),
                   // view details
                   onTap: () {
-                    debug("Tapped on ${samples[i]['name']}");
+                    debug("Tapped on ${search_data[i]['name']}");
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => View_Form(
                           input_json: {
-                            'image': samples[i]['image'] ?? '', //
-                            'name': samples[i]['name'] ?? '', //
-                            'position': samples[i]['position'] ?? '', //
-                            'description': samples[i]['description'] ?? '', //
+                            'image': search_data[i]['image'] ?? '', //
+                            'name': search_data[i]['name'] ?? '', //
+                            'position': search_data[i]['position'] ?? '', //
+                            'description': search_data[i]['description'] ?? '', //
                           },
                         ),
                       ),
@@ -226,12 +228,12 @@ class _Contributor_PageState extends State<Contributor_Page> {
                   },
                   // delete
                   onLongPress: () {
-                    debug("Long pressed on ${samples[i]['name']}");
+                    debug("Long pressed on ${search_data[i]['name']}");
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Delete ${samples[i]['name']}'),
+                          title: Text('Delete ${search_data[i]['name']}'),
                           content: Text('Are you sure?'),
                           actions: [
                             TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('Cancel')),
@@ -241,7 +243,7 @@ class _Contributor_PageState extends State<Contributor_Page> {
                                     .post(
                                       "/contributor/delete", //
                                       data: FormData.fromMap({
-                                        "id": samples[i]['_id']['\$oid'] ?? '', //
+                                        "id": search_data[i]['_id']['\$oid'] ?? '', //
                                       }),
                                     )
                                     .then((r) {
@@ -267,39 +269,41 @@ class _Contributor_PageState extends State<Contributor_Page> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: SizedBox(
-        width: 600,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              FloatingActionButton(
-                heroTag: 'add',
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                onPressed: () async {
-                  await dio
-                      .post(
-                        "/contributor/create", //
-                        data: FormData.fromMap({}),
-                      )
-                      .then((r) {
-                        init();
-                        // show_snackbar(context: context, message: "Add successful", color: Colors.green);
-                      })
-                      .catchError((e) {
-                        // show_snackbar(context: context, message: "Add failed", color: Colors.red);
-                      });
-                },
-                tooltip: 'Add new contributor',
-                child: const Icon(Icons.add),
+      floatingActionButton: !is_admin
+          ? SizedBox.shrink() //
+          : SizedBox(
+              width: 600,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    FloatingActionButton(
+                      heroTag: 'add',
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                      onPressed: () async {
+                        await dio
+                            .post(
+                              "/contributor/create", //
+                              data: FormData.fromMap({}),
+                            )
+                            .then((r) {
+                              init();
+                              // show_snackbar(context: context, message: "Add successful", color: Colors.green);
+                            })
+                            .catchError((e) {
+                              // show_snackbar(context: context, message: "Add failed", color: Colors.red);
+                            });
+                      },
+                      tooltip: 'Add new contributor',
+                      child: const Icon(Icons.add),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
