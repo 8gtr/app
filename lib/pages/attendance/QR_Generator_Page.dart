@@ -42,7 +42,7 @@ class QR_Generator_PageState extends State<QR_Generator_Page> {
   bool is_enable_scan = false;
 
   String class_name = "Select Class";
-  String class_type = "Select Type";
+  String class_type = "Class Type";
 
   String qr = "";
 
@@ -106,115 +106,142 @@ class QR_Generator_PageState extends State<QR_Generator_Page> {
         child: Center(
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // select class name
-                  OutlinedButton(
-                    child: Text(class_name),
-                    onPressed: () {
-                      if (is_enable_scan) {
-                        show_snackbar(context: context, message: "Please disable QR scan first", color: Colors.red);
-                        return;
-                      }
-                      Navigator //
-                          .of(context)
-                          .push(MaterialPageRoute(builder: (context) => Select_Class_Name()))
-                          .then((o) {
-                            if (o != null) {
-                              class_name = o;
-                              setState(() {});
-                            }
-                          });
-                    },
-                  ),
+              SizedBox(
+                width: 600,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // select class name
+                    Expanded(
+                      child: OutlinedButton(
+                        child: Text(class_name, overflow: TextOverflow.ellipsis),
+                        onPressed: () {
+                          if (is_enable_scan) {
+                            show_snackbar(context: context, message: "Please disable QR scan first", color: Colors.red);
+                            return;
+                          }
+                          Navigator //
+                              .of(context)
+                              .push(MaterialPageRoute(builder: (context) => Select_Class_Name()))
+                              .then((o) {
+                                if (o != null) {
+                                  class_name = o;
+                                  setState(() {});
+                                }
+                              });
+                        },
+                      ),
+                    ),
 
-                  SizedBox(width: 8),
+                    SizedBox(width: 8),
 
-                  // select class type
-                  OutlinedButton(
-                    child: Text(class_type),
-                    onPressed: () {
-                      if (is_enable_scan) {
-                        show_snackbar(context: context, message: "Please disable QR scan first", color: Colors.red);
-                        return;
-                      }
-                      Navigator //
-                          .of(context)
-                          .push(MaterialPageRoute(builder: (context) => Select_Class_Type()))
-                          .then((o) {
-                            if (o != null) {
-                              class_type = o;
-                              setState(() {});
-                            }
-                          });
-                    },
-                  ),
-
-                  SizedBox(width: 8),
-
-                  // enable scan
-                  if (!is_enable_scan)
-                    OutlinedButton.icon(
-                      icon: Icon(Icons.play_arrow, color: Colors.green),
-                      label: Text("Enable", style: TextStyle(color: Colors.green)), //
-                      onPressed: () async {
-                        if (class_name == "Select Class") {
-                          show_snackbar(context: context, message: "Please select Class Name", color: Colors.red);
+                    // select class type
+                    OutlinedButton(
+                      child: Container(
+                        width: 80, //
+                        alignment: Alignment.center,
+                        child: Text(class_type, overflow: TextOverflow.ellipsis),
+                      ),
+                      onPressed: () {
+                        if (is_enable_scan) {
+                          show_snackbar(context: context, message: "Please disable QR scan first", color: Colors.red);
                           return;
                         }
-
-                        if (class_type == "Select Type") {
-                          show_snackbar(context: context, message: "Please select Class Type", color: Colors.red);
-                          return;
-                        }
-
-                        String token = generate_token();
-                        await dio
-                            .post(
-                              '/attendance/enable_qr_scan',
-                              data: FormData.fromMap({
-                                "code": token, //
-                                "class_name": class_name, //
-                                "class_type": class_type, //
-                              }),
-                            )
-                            .then((response) {
-                              is_enable_scan = true;
-                              qr = token;
-                              debug("Enabled QR: $qr");
-                              setState(() {});
-                              show_snackbar(context: context, message: "QR enabled", color: Colors.green);
-                            })
-                            .catchError((error) {
-                              show_snackbar(context: context, message: "Error", color: Colors.red);
+                        Navigator //
+                            .of(context)
+                            .push(MaterialPageRoute(builder: (context) => Select_Class_Type()))
+                            .then((o) {
+                              if (o != null) {
+                                class_type = o;
+                                setState(() {});
+                              }
                             });
                       },
                     ),
 
-                  // disable scan
-                  if (is_enable_scan)
-                    OutlinedButton.icon(
-                      icon: Icon(Icons.stop, color: Colors.red),
-                      label: Text("Disable", style: TextStyle(color: Colors.red)), //
-                      onPressed: () async {
-                        await dio
-                            .post(
-                              '/attendance/disable_qr_scan', //
-                              data: FormData.fromMap({}),
-                            )
-                            .then((response) {
-                              is_enable_scan = false;
-                              qr = "";
-                              setState(() {});
-                              show_snackbar(context: context, message: "QR disabled", color: Colors.green);
-                            })
-                            .catchError((error) {
-                              show_snackbar(context: context, message: "Error", color: Colors.red);
-                            });
-                      },
-                    ),
-                ],
+                    SizedBox(width: 8),
+
+                    // enable scan
+                    if (!is_enable_scan)
+                      OutlinedButton(
+                        child: Container(
+                          width: 80,
+                          alignment: Alignment.center,
+                          child: Row(
+                            children: [
+                              Icon(Icons.play_arrow, color: Colors.green),
+                              SizedBox(width: 4),
+                              Text("Enable", style: TextStyle(color: Colors.green)),
+                            ],
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (class_name == "Select Class") {
+                            show_snackbar(context: context, message: "Please select Class Name", color: Colors.red);
+                            return;
+                          }
+
+                          if (class_type == "Class Type") {
+                            show_snackbar(context: context, message: "Please select Class Type", color: Colors.red);
+                            return;
+                          }
+
+                          String token = generate_token();
+                          await dio
+                              .post(
+                                '/attendance/enable_qr_scan',
+                                data: FormData.fromMap({
+                                  "code": token, //
+                                  "class_name": class_name, //
+                                  "class_type": class_type, //
+                                }),
+                              )
+                              .then((response) {
+                                is_enable_scan = true;
+                                qr = token;
+                                debug("Enabled QR: $qr");
+                                setState(() {});
+                                show_snackbar(context: context, message: "QR enabled", color: Colors.green);
+                              })
+                              .catchError((error) {
+                                show_snackbar(context: context, message: "Error", color: Colors.red);
+                              });
+                        },
+                      ),
+
+                    // disable scan
+                    if (is_enable_scan)
+                      OutlinedButton(
+                        child: Container(
+                          width: 80,
+                          alignment: Alignment.center,
+                          child: Row(
+                            children: [
+                              Icon(Icons.stop, color: Colors.red),
+                              SizedBox(width: 4),
+                              Text("Disable", style: TextStyle(color: Colors.red)),
+                            ],
+                          ),
+                        ),
+                        onPressed: () async {
+                          await dio
+                              .post(
+                                '/attendance/disable_qr_scan', //
+                                data: FormData.fromMap({}),
+                              )
+                              .then((response) {
+                                is_enable_scan = false;
+                                qr = "";
+                                setState(() {});
+                                show_snackbar(context: context, message: "QR disabled", color: Colors.green);
+                              })
+                              .catchError((error) {
+                                show_snackbar(context: context, message: "Error", color: Colors.red);
+                              });
+                        },
+                      ),
+                  ],
+                ),
               ),
               if (is_enable_scan)
                 Expanded(

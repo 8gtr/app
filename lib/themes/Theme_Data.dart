@@ -62,6 +62,7 @@ class Theme_Data {
             borderRadius: BorderRadius.circular(0), //
           ),
           minimumSize: Size(0, 40),
+          padding: EdgeInsets.symmetric(horizontal: 8),
         ),
       ),
 
