@@ -62,6 +62,42 @@ class _Reset_PageState extends State<Reset_Page> {
   TextEditingController controller_new_password = TextEditingController();
   TextEditingController controller_confirm_new_password = TextEditingController();
 
+  void on_reset() async {
+    await dio
+        .post(
+          '/credential/reset', //
+          data: FormData.fromMap({
+            'telegram_id': controller_telegram_id.text, //
+            'reset_otp': controller_signup_otp.text, //
+            'username': controller_new_username.text, //
+            'password': controller_new_password.text, //
+          }),
+        )
+        .then((r) {
+          show_snackbar(context: context, message: 'Reset Completed', color: Colors.green);
+          Navigator.of(context).pop(true); // reset successful
+        })
+        .catchError((e) {
+          show_snackbar(context: context, message: 'Error', color: Colors.red);
+        });
+  }
+
+  void on_get_reset_otp() async {
+    await dio
+        .post(
+          '/credential/reset_otp', //
+          data: FormData.fromMap({
+            'telegram_id': controller_telegram_id.text, //
+          }),
+        )
+        .then((r) {
+          show_snackbar(context: context, message: 'Reset OTP sent', color: Colors.green);
+        })
+        .catchError((e) {
+          show_snackbar(context: context, message: 'Error', color: Colors.red);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,10 +115,8 @@ class _Reset_PageState extends State<Reset_Page> {
                     decoration: InputDecoration(
                       labelText: 'Telegram ID',
                       suffixIcon: TextButton(
-                        onPressed: () async {
-                          await launchUrl(Uri.parse('https://t.me/gtr_otp_bot'));
-                        },
-                        child: Text("Open Bot"),
+                        child: Text("Open Bot"), //
+                        onPressed: () async => await launchUrl(Uri.parse('https://t.me/gtr_otp_bot')),
                       ),
                     ),
                     onChanged: (_) => setState(() {}),
@@ -95,22 +129,8 @@ class _Reset_PageState extends State<Reset_Page> {
                     decoration: InputDecoration(
                       labelText: 'Reset OTP', //
                       suffixIcon: TextButton(
-                        onPressed: () async {
-                          await dio
-                              .post(
-                                '/credential/reset_otp', //
-                                data: FormData.fromMap({
-                                  'telegram_id': controller_telegram_id.text, //
-                                }),
-                              )
-                              .then((r) {
-                                show_snackbar(context: context, message: 'Reset OTP sent', color: Colors.green);
-                              })
-                              .catchError((e) {
-                                show_snackbar(context: context, message: 'Error', color: Colors.red);
-                              });
-                        },
-                        child: Text("Get OTP"),
+                        child: Text("Get OTP"), //
+                        onPressed: () => on_get_reset_otp(),
                       ),
                     ),
                     enabled: controller_telegram_id.text.isNotEmpty,
@@ -153,15 +173,15 @@ class _Reset_PageState extends State<Reset_Page> {
                       labelText: 'Confirm New Password',
                       suffixIcon: IconButton(
                         onPressed: () {
-                          setState(() {
-                            is_confirm_new_password_visible = !is_confirm_new_password_visible;
-                          });
+                          is_confirm_new_password_visible = !is_confirm_new_password_visible;
+                          setState(() {});
                         },
                         icon: Icon(!is_confirm_new_password_visible ? Icons.visibility : Icons.visibility_off),
                       ),
                     ),
                     obscureText: !is_confirm_new_password_visible,
                     enabled: controller_new_password.text.isNotEmpty,
+                    onChanged: (_) => setState(() {}),
                   ),
 
                   SizedBox(height: 8),
@@ -175,25 +195,7 @@ class _Reset_PageState extends State<Reset_Page> {
                             controller_confirm_new_password.text.isEmpty ||
                             controller_new_password.text != controller_confirm_new_password.text
                         ? null
-                        : () async {
-                            await dio
-                                .post(
-                                  '/credential/reset', //
-                                  data: FormData.fromMap({
-                                    'telegram_id': controller_telegram_id.text, //
-                                    'reset_otp': controller_signup_otp.text, //
-                                    'username': controller_new_username.text, //
-                                    'password': controller_new_password.text, //
-                                  }),
-                                )
-                                .then((r) {
-                                  show_snackbar(context: context, message: 'Reset Completed', color: Colors.green);
-                                  Navigator.of(context).pop(true); // reset successful
-                                })
-                                .catchError((e) {
-                                  show_snackbar(context: context, message: 'Error', color: Colors.red);
-                                });
-                          },
+                        : () => on_reset(),
                     child: Text('Reset'),
                   ),
                 ],

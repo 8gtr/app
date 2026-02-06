@@ -62,6 +62,43 @@ class _Sign_Up_PageState extends State<Sign_Up_Page> {
   TextEditingController controller_password = TextEditingController();
   TextEditingController controller_confirm_password = TextEditingController();
 
+  void on_signup() async {
+    //
+    await dio
+        .post(
+          '/credential/signup', //
+          data: FormData.fromMap({
+            'username': controller_username.text, //
+            'password': controller_password.text, //
+            'telegram_id': controller_telegram_id.text, //
+            'signup_otp': controller_signup_otp.text, //
+          }),
+        )
+        .then((r) {
+          show_snackbar(context: context, message: 'Sign Up Successful', color: Colors.green);
+          Navigator.of(context).pop(true); // sign up successful
+        })
+        .catchError((e) {
+          show_snackbar(context: context, message: 'Sign Up Failed', color: Colors.red);
+        });
+  }
+
+  void on_get_signup_otp() async {
+    await dio
+        .post(
+          '/credential/signup_otp', //
+          data: FormData.fromMap({
+            'telegram_id': controller_telegram_id.text, //
+          }),
+        )
+        .then((r) {
+          show_snackbar(context: context, message: 'Sign Up OTP sent', color: Colors.green);
+        })
+        .catchError((e) {
+          show_snackbar(context: context, message: 'Error', color: Colors.red);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,6 +113,7 @@ class _Sign_Up_PageState extends State<Sign_Up_Page> {
                 children: [
                   TextField(
                     controller: controller_telegram_id,
+                    autofocus: true,
                     decoration: InputDecoration(
                       labelText: 'Telegram ID',
                       suffixIcon: TextButton(
@@ -95,22 +133,8 @@ class _Sign_Up_PageState extends State<Sign_Up_Page> {
                     decoration: InputDecoration(
                       labelText: 'Sign Up OTP', //
                       suffixIcon: TextButton(
-                        onPressed: () async {
-                          await dio
-                              .post(
-                                '/credential/signup_otp', //
-                                data: FormData.fromMap({
-                                  'telegram_id': controller_telegram_id.text, //
-                                }),
-                              )
-                              .then((r) {
-                                show_snackbar(context: context, message: 'Sign Up OTP sent', color: Colors.green);
-                              })
-                              .catchError((e) {
-                                show_snackbar(context: context, message: 'Error', color: Colors.red);
-                              });
-                        },
                         child: Text("Get OTP"),
+                        onPressed: () => on_get_signup_otp(), //
                       ),
                     ),
                     enabled: controller_telegram_id.text.isNotEmpty,
@@ -153,9 +177,8 @@ class _Sign_Up_PageState extends State<Sign_Up_Page> {
                       labelText: 'Confirm Password',
                       suffixIcon: IconButton(
                         onPressed: () {
-                          setState(() {
-                            is_confirm_password_visible = !is_confirm_password_visible;
-                          });
+                          is_confirm_password_visible = !is_confirm_password_visible;
+                          setState(() {});
                         },
                         icon: Icon(!is_confirm_password_visible ? Icons.visibility : Icons.visibility_off),
                       ),
@@ -176,25 +199,7 @@ class _Sign_Up_PageState extends State<Sign_Up_Page> {
                             controller_confirm_password.text.isEmpty ||
                             controller_password.text != controller_confirm_password.text
                         ? null
-                        : () async {
-                            await dio
-                                .post(
-                                  '/credential/signup', //
-                                  data: FormData.fromMap({
-                                    'username': controller_username.text, //
-                                    'password': controller_password.text, //
-                                    'telegram_id': controller_telegram_id.text, //
-                                    'signup_otp': controller_signup_otp.text, //
-                                  }),
-                                )
-                                .then((r) {
-                                  show_snackbar(context: context, message: 'Sign Up Successful', color: Colors.green);
-                                  Navigator.of(context).pop(true); // sign up successful
-                                })
-                                .catchError((e) {
-                                  show_snackbar(context: context, message: 'Sign Up Failed', color: Colors.red);
-                                });
-                          },
+                        : () => on_signup(),
                     child: Text('Sign Up'),
                   ),
                 ],

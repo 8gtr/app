@@ -65,8 +65,8 @@ class _View_FormState extends State<View_Form> {
                 children: [
                   widget.input_json['image'] == ''
                       ? //
-                        Image.asset('assets/logo.png', width: 200, height: 200)
-                      : Image.network('${MINIO}/${widget.input_json['image']}', width: 200, height: 200, fit: BoxFit.cover),
+                        Image.network('$MINIO_PUBLIC/logo.png', width: 200, height: 200)
+                      : Image.network('$MINIO_PUBLIC/${widget.input_json['image']}', width: 200, height: 200, fit: BoxFit.cover),
 
                   Text(
                     widget.input_json['name'] ?? '', //

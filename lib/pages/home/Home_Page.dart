@@ -55,9 +55,9 @@ class _Home_PageState extends State<Home_Page> {
   Widget build(BuildContext context) {
     //
     List<Widget> images = [
-      Image.asset('assets/images/image_1.jpeg'), //
-      Image.asset('assets/images/image_2.jpeg'), //
-      Image.asset('assets/images/image_3.png'), //
+      Image.network('$MINIO_PUBLIC/banner/image_1.jpeg'), //
+      Image.network('$MINIO_PUBLIC/banner/image_2.jpeg'), //
+      Image.network('$MINIO_PUBLIC/banner/image_3.png'), //
     ];
 
     return Scaffold(

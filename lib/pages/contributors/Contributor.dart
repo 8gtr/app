@@ -164,8 +164,8 @@ class _Contributor_PageState extends State<Contributor_Page> {
                       !is_search ? ReorderableDragStartListener(index: i, child: Icon(Icons.drag_indicator)) : SizedBox.shrink(),
                       SizedBox(width: 8),
                       samples[i]['image'] == null
-                          ? Image.asset('assets/logo.png', width: 50, height: 50, fit: BoxFit.cover) //
-                          : Image.network('${MINIO}/${samples[i]['image']}', width: 50, height: 50, fit: BoxFit.cover), //
+                          ? Image.network('$MINIO_PUBLIC/logo.png', width: 50, height: 50, fit: BoxFit.cover) //
+                          : Image.network('$MINIO_PUBLIC/${samples[i]['image']}', width: 50, height: 50, fit: BoxFit.cover), //
                     ],
                   ),
                   title: Text(samples[i]['name'] ?? ''),

@@ -145,12 +145,12 @@ class _Profile_PageState extends State<Profile_Page> {
                             width: 600,
                             height: 200, //
                             child: background_image == null
-                                ? Image.asset(
-                                    'assets/background.png',
+                                ? Image.network(
+                                    '$MINIO_PUBLIC/background.png',
                                     fit: BoxFit.cover, //
                                   )
                                 : Image.network(
-                                    '$MINIO/$background_image',
+                                    '$MINIO_PUBLIC/$background_image',
                                     fit: BoxFit.cover, //
                                   ),
                           ),
@@ -195,8 +195,8 @@ class _Profile_PageState extends State<Profile_Page> {
                             height: 100,
                             width: 100,
                             child: profile_image == null
-                                ? Image.asset('assets/logo.png', fit: BoxFit.cover) //
-                                : Image.network('$MINIO/$profile_image', fit: BoxFit.cover), //
+                                ? Image.network('$MINIO_PUBLIC/logo.png', fit: BoxFit.cover) //
+                                : Image.network('$MINIO_PUBLIC/$profile_image', fit: BoxFit.cover), //
                           ),
                           if (access_token != null)
                             IconButton(

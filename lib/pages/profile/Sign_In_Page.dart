@@ -56,6 +56,38 @@ class _Sign_In_PageState extends State<Sign_In_Page> {
     debug('Sign In Page Loaded');
   }
 
+  void on_signin() async {
+    //
+    await dio
+        .post(
+          '/credential/signin', //
+          data: FormData.fromMap({
+            'username': controller_username.text, //
+            'password': controller_password.text, //
+          }),
+        )
+        .then((r) async {
+          show_snackbar(
+            context: context, //
+            message: 'Sign In Successful',
+            color: Colors.green,
+          );
+          debug(r.data['access_token']);
+          await secure_storage.write(
+            key: 'access_token', //
+            value: r.data['access_token'],
+          );
+          Navigator.pop(context); //
+        })
+        .catchError((e) {
+          show_snackbar(
+            context: context, //
+            message: 'Sign In Failed',
+            color: Colors.red,
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,8 +102,10 @@ class _Sign_In_PageState extends State<Sign_In_Page> {
                 children: [
                   TextField(
                     controller: controller_username, //
+                    autofocus: true,
                     decoration: InputDecoration(labelText: 'Username'),
                     onChanged: (_) => setState(() {}),
+                    onSubmitted: (_) => on_signin(),
                   ),
 
                   SizedBox(height: 8),
@@ -90,6 +124,7 @@ class _Sign_In_PageState extends State<Sign_In_Page> {
                     ),
                     obscureText: !is_password_visible,
                     onChanged: (_) => setState(() {}),
+                    onSubmitted: (_) => on_signin(),
                   ),
 
                   SizedBox(height: 8),
@@ -99,36 +134,7 @@ class _Sign_In_PageState extends State<Sign_In_Page> {
                         controller_username.text.isEmpty || //
                             controller_password.text.isEmpty
                         ? null
-                        : () async {
-                            await dio
-                                .post(
-                                  '/credential/signin', //
-                                  data: FormData.fromMap({
-                                    'username': controller_username.text, //
-                                    'password': controller_password.text, //
-                                  }),
-                                )
-                                .then((r) async {
-                                  show_snackbar(
-                                    context: context, //
-                                    message: 'Sign In Successful',
-                                    color: Colors.green,
-                                  );
-                                  debug(r.data['access_token']);
-                                  await secure_storage.write(
-                                    key: 'access_token', //
-                                    value: r.data['access_token'],
-                                  );
-                                  Navigator.pop(context); //
-                                })
-                                .catchError((e) {
-                                  show_snackbar(
-                                    context: context, //
-                                    message: 'Sign In Failed',
-                                    color: Colors.red,
-                                  );
-                                });
-                          },
+                        : () => on_signin(),
                     child: Text('Sign In'),
                   ),
                 ],

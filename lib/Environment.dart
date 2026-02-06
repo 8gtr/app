@@ -8,4 +8,4 @@ String DEPARTMENT_NAME_FR = "Génie des Télécommunications et Réseaux";
 
 String HOST_API = kDebugMode ? 'http://127.0.0.1:8000' : 'https://api.codeshift.me';
 
-String MINIO = 'https://pub.codeshift.me/public';
+String MINIO_PUBLIC = 'https://pub.codeshift.me/public';

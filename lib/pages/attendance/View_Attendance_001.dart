@@ -178,7 +178,7 @@ class _View_Attendance_001State extends State<View_Attendance_001> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
-                          SizedBox(width: 16),
+                          SizedBox(width: 8),
                         ],
                       ),
                       SizedBox(height: 8),
@@ -217,7 +217,7 @@ class _View_Attendance_001State extends State<View_Attendance_001> {
                                     alignment: Alignment.center,
                                     child: Text(search_data[index][search_data[0].keys.elementAt(3)].toString()),
                                   ),
-                                  SizedBox(width: 16),
+                                  SizedBox(width: 8),
                                 ],
                               );
                             },

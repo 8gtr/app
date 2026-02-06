@@ -26,8 +26,8 @@ class _Navigator_LeftState extends State<Navigator_Left> {
           Container(
             height: 200, //
             alignment: Alignment.center,
-            child: Image.asset(
-              'assets/background.png',
+            child: Image.network(
+              '$MINIO_PUBLIC/background.png',
               height: 200,
               fit: BoxFit.cover, //
             ), //
